@@ -1,73 +1,288 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Input } from "./components/ui/input";
+import { ChevronDown, EllipsisVertical, Plus } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 function App() {
+  const [position, setPosition] = useState("bottom");
   return (
-    <>
-      <div className="min-h-screen relative flex flex-col gap-4">
-        <div className="w-full sticky top-0 right-0 p-8 flex items-center justify-between gap-4">
-          <p className="font-medium text-2xl flex-1">Balanggay Project</p>
-          <Button>Create Deck</Button>
+    <div className="flex justify-center">
+      <div className="min-h-screen relative flex flex-col gap-2 min-w-[1440px]">
+        <div className="w-full sticky top-0 right-0 py-6 px-8 flex items-center justify-between gap-4 bg-background">
+          <p className="font-medium text-2xl flex-1">Recall</p>
+
           <Button>Connect Wallet</Button>
         </div>
 
-        <div className="w-full flex gap-4 p-4">
-          <div className="p-4 grow basis-[1/3] border border-border rounded-xl">
-            <p className="">Due: 3</p>
-            <p className="">Medical Field</p>
+        <div className="flex flex-col gap-4 px-8 w-full">
+          <div className="flex items-center justify-between">
+            <p>Welcome, renzothenoob</p>
 
-            <AlertDialog>
-              <AlertDialogTrigger>Open</AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your account and remove your data from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <div className="flex gap-2">
+              <div className="p-4 border border-border rounded-xl">
+                <p>Total Cards Due: 100</p>
+              </div>
+
+              <div className="p-4 border border-border rounded-xl">
+                <p>Total Decks: 3</p>
+              </div>
+
+              <div className="p-4 border border-border rounded-xl">
+                <p>Overall Retention: 90%</p>
+              </div>
+            </div>
+            <CreateDeckModal />
           </div>
 
-          <div className="p-4 grow basis-[1/3] border border-border rounded-xl">
-            <p className="">Due: 3</p>
-            <p className="">Medical Field</p>
+          <div className="flex justify-between items-center">
+            <p className="text-2xl font-medium">Due Today</p>
           </div>
 
-          <div className="p-4 grow basis-[1/3] border border-border rounded-xl">
-            <p className="">Due: 3</p>
-            <p className="">Medical Field</p>
+          <div className="flex flex-wrap gap-4 w-full">
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
           </div>
 
-          <div className="p-4 grow basis-[1/3] border border-border rounded-xl">
-            <p className="">Due: 3</p>
-            <p className="">Medical Field</p>
+          <div className="flex justify-between items-center">
+            <p className="text-2xl font-medium">Recommended Decks </p>
           </div>
 
-          <div className="p-4 grow basis-[1/3] border border-border rounded-xl">
-            <p className="">Due: 3</p>
-            <p className="">Medical Field</p>
+          <div className="flex flex-wrap gap-4 w-full">
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+          </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-2xl font-medium">My Decks</p>
+
+            <div className="flex items-center gap-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"ghost"} className="flex items-center gap-2">
+                    Sort By <ChevronDown size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuRadioGroup
+                    value={position}
+                    onValueChange={setPosition}
+                  >
+                    <DropdownMenuRadioItem value="top">
+                      Deck Name A-Z
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="bottom">
+                      Deck Name Z-A
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="right">
+                      Due Date closest to now
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="right">
+                      Due Date farthest from now
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Input className="max-w-[200px]"></Input>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-4 w-full">
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
+            <Deck />
           </div>
         </div>
       </div>
-    </>
+    </div>
+  );
+}
+
+function Deck() {
+  return (
+    <div className="p-4 flex flex-col gap-4 w-full basis-[19%] border border-border rounded-xl">
+      <div className="flex items-center justify-between">
+        <p className="">Due: 3</p>
+
+        <p>Total Retention: 90%</p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-2xl">Medical Field</p>
+        <p className="text-sm text-muted-foreground">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
+          aspernatur autem omnis fugiat est, quaerat delectus sit ducimus
+          aliquid nulla officia vel, quasi fugit. Doloremque cupiditate deserunt
+          sunt quo animi.
+        </p>
+      </div>
+
+      <div className="flex w-full gap-2">
+        <Button variant={"outline"} className="flex-1">
+          Open Deck
+        </Button>
+        <Button variant={"outline"}>
+          <EllipsisVertical size={15} />
+        </Button>
+      </div>
+
+      {/* <AlertDialog>
+        <AlertDialogTrigger>Open</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="flex flex-col gap-8 items-center">
+              <p className="text-2xl font-medium">Question</p>
+
+              <div className="flex flex-col gap-2 w-full">
+                <hr className="bg-primary h-[1px] w-full" />
+                <p className="text-center">Answer</p>
+              </div>
+              <div className="flex flex-col gap-4 w-full">
+                <div className="w-full flex items-center justify-center gap-4">
+                  <Button className="bg-red-500 text-white">Fail</Button>
+                  <Button className="bg-green-500 text-white">Pass</Button>
+                </div>
+
+                <div className="w-full flex items-center justify-center gap-4">
+                  <p>New: 1</p>
+                  <p>Failed: 23</p>
+                  <p>To Review: 1</p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog>
+        <AlertDialogTrigger>Add Cards</AlertDialogTrigger>
+        <AlertDialogContent className="min-w-[900px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deck: Medical Field</AlertDialogTitle>
+            <AlertDialogDescription className="flex grow gap-4">
+              <div className="flex flex-col gap-4 items-center flex-1">
+                <div className="flex flex-col gap-2 w-full">
+                  <p>Question</p>
+                  <Input></Input>
+                </div>
+
+                <div className="flex flex-col gap-2 w-full">
+                  <p>Answer</p>
+                  <Input></Input>
+                </div>
+
+                <Button className="w-full">Add this Card</Button>
+              </div>
+
+              <div className="flex flex-col gap-2  max-h-[300px] p-2 flex-1">
+                <p>My Cards</p>
+
+                <div className="flex flex-col gap-2 overflow-y-scroll">
+                  <div className="flex flex-col gap-2 border-border border p-4 rounded-2xl">
+                    <p>What is life?</p>
+                    <p>It is amazing</p>
+
+                    <p>Due: 03-12-24 12:12:12</p>
+                    <p>Started: 03-12-24 12:12:12</p>
+                    <p>Retention Rate: 100%</p>
+                    <AlertDialog>
+                      <AlertDialogTrigger>Edit</AlertDialogTrigger>
+                      <AlertDialogContent className="min-w-[900px]">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Deck: Medical Field
+                          </AlertDialogTitle>
+                          <AlertDialogDescription className="flex flex-col gap-4 items-center flex-1">
+                            <div className="flex flex-col gap-2 w-full">
+                              <p>Question</p>
+                              <Input></Input>
+                            </div>
+
+                            <div className="flex flex-col gap-2 w-full">
+                              <p>Answer</p>
+                              <Input></Input>
+                            </div>
+
+                            <Button className="w-full">Update card</Button>
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog> */}
+    </div>
+  );
+}
+
+function CreateDeckModal() {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button size={"icon"} variant={"ghost"}>
+          <Plus />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Create your own deck</AlertDialogTitle>
+          <AlertDialogDescription className="flex flex-col gap-8 items-center">
+            <div className="flex flex-col gap-2 w-full">
+              <p>Name</p>
+              <Input></Input>
+            </div>
+
+            <div className="flex flex-col gap-2 w-full">
+              <p>Description</p>
+              <Input></Input>
+            </div>
+
+            <Button className="w-full">Create Deck</Button>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
