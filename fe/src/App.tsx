@@ -17,11 +17,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/navbar";
+import CreateDeck from "./views/create-deck";
+import useGetMyDecks from "@/hooks/useGetDecks";
+import CreateCard from "./views/create-card";
 
 function App() {
+  const { data, isFetching } = useGetMyDecks();
   const [position, setPosition] = useState("bottom");
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  if (isFetching) {
+    return <></>;
+  }
+
   return (
     <div className="flex justify-center">
       <div className="min-h-screen relative flex flex-col gap-2 min-w-[1440px]">
@@ -35,10 +48,16 @@ function App() {
             </div>
 
             <div className="flex flex-wrap gap-4 w-full">
-              <Deck />
-              <Deck />
-              <Deck />
-              <Deck />
+              {data.map((e: any) => {
+                return (
+                  <Deck
+                    key={e.id}
+                    name={e.name}
+                    description={e.description}
+                    deck_id={e.id}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -47,7 +66,7 @@ function App() {
               <p className="text-2xl font-medium">Marketplace Favourites</p>
             </div>
 
-            <div className="flex flex-wrap gap-4 w-full">
+            {/* <div className="flex flex-wrap gap-4 w-full">
               <Deck />
               <Deck />
               <Deck />
@@ -55,7 +74,7 @@ function App() {
               <Deck />
               <Deck />
               <Deck />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -96,7 +115,7 @@ function App() {
                 <Input className="max-w-[200px]"></Input>
               </div>
             </div>
-
+            {/* 
             <div className="flex flex-wrap gap-4 w-full">
               <Deck />
               <Deck />
@@ -114,7 +133,7 @@ function App() {
               <Deck />
               <Deck />
               <Deck />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -140,12 +159,19 @@ function Header() {
           <p>Overall Retention: 90%</p>
         </div>
       </div>
-      <CreateDeckModal />
+      <CreateDeck />
     </div>
   );
 }
 
-function Deck() {
+interface IDeckProps {
+  name: string;
+  description: string;
+  deck_id: number;
+}
+
+function Deck({ name, description, deck_id }: IDeckProps) {
+  const [createCardOpen, setCreateCardOpen] = useState(false);
   return (
     <div className="p-4 flex flex-col gap-4 w-full basis-[19%] border border-border rounded-xl">
       <div className="flex items-center justify-between">
@@ -155,13 +181,8 @@ function Deck() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-2xl">Medical Field</p>
-        <p className="text-sm text-muted-foreground">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-          aspernatur autem omnis fugiat est, quaerat delectus sit ducimus
-          aliquid nulla officia vel, quasi fugit. Doloremque cupiditate deserunt
-          sunt quo animi.
-        </p>
+        <p className="text-2xl">{name}</p>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
 
       <div className="flex w-full gap-2">
@@ -199,7 +220,18 @@ function Deck() {
             </AlertDialogHeader>
           </AlertDialogContent>
         </AlertDialog>
-        <AlertDialog>
+
+        <CreateCard open={createCardOpen} deck_id={deck_id} />
+
+        <Button
+          variant={"outline"}
+          onClick={() => {
+            setCreateCardOpen((state) => !state);
+          }}
+        >
+          <EllipsisVertical size={15} />
+        </Button>
+        {/* <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant={"outline"}>
               <EllipsisVertical size={15} />
@@ -387,7 +419,7 @@ function Deck() {
               </AlertDialogDescription>
             </AlertDialogHeader>
           </AlertDialogContent>
-        </AlertDialog>
+        </AlertDialog> */}
       </div>
     </div>
   );

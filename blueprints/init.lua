@@ -1,31 +1,51 @@
 local json = require('json')
 
-
+-- Data
 DB = DB or {
-  Decks = 1,
-  Users = 1,
+  DECKS = 0,
+  CARDS = 0
 }
-Decks = Decks or {}
-Users = Users or {}
 
+Decks = Decks or {}
+Cards = Cards or {}
+
+
+-- Handlers
 Handlers.add(
   "create_deck",
   Handlers.utils.hasMatchingTag("Action", "CreateDeck"),
   function (msg)
-    
+    print(msg.From)
+    print("create deck")
+
     local data = json.decode(msg.Data)
-    local newDeck = {
-       id = DB["Decks"],
-       description = data.description,
-       name = data.name,
-       author = msg.From
-    }
+    DB["DECKS"] = DB["DECKS"] + 1
+    table.insert(Decks, {
+        id = DB["DECKS"],
+        author = msg.From,
+        name = data.name,
+        description = data.description,
+    })
+    Handlers.utils.reply("create deck success")(msg)
+  end
+)
 
+Handlers.add(
+  "create_card",
+  Handlers.utils.hasMatchingTag("Action", "CreateCard"),
+  function (msg)
+    print(msg.From)
+    print("create card")
 
-    DB["Decks"] = DB["Decks"] + 1
-
-    table.insert(Decks, newDeck)
-    Handlers.utils.reply("incrementor")(msg)
+    local data = json.decode(msg.Data)
+    DB["CARDS"] = DB["CARDS"] + 1
+    table.insert(Cards, {
+        id = DB["CARDS"],
+        deck_id = data.deck_id,
+        question = data.question,
+        answer = data.answer,
+    })
+    Handlers.utils.reply("create card success")(msg)
   end
 )
 
@@ -33,21 +53,22 @@ Handlers.add(
   "get_my_decks",
   Handlers.utils.hasMatchingTag("Action", "GetMyDecks"),
   function (msg)
-    
-    local data = {}
-
-    for _, deck in ipairs(Decks) do
-      -- if deck["author"] == msg.From then
-          table.insert(data, deck)
-      -- end
+    print(msg.From)
+    print("get my decks")
+    local temp = {}
+    for _, value in ipairs(Decks) do
+        if(value.author == msg.From) then
+            table.insert(temp, value)
+        end
     end
-
-    Handlers.utils.reply(json.encode(data))(msg)
+    Handlers.utils.reply(json.encode(temp))(msg)
   end
 )
 
 
-
+Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Data = '{"name":"qwdqd","description":"test"}', Action = "CreateDeck"})
+Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Data = '{"deck_id": 15,"question":"qwdqd","answer":"test"}', Action = "CreateCard"})
+Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Action = "GetMyDecks"})
 
 -- Users = Users or {}
 -- Cards = Cards or {}
