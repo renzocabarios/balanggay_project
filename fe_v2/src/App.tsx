@@ -1,19 +1,30 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
 import { HashRouter } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-function App() {
-  const [count, setCount] = useState(0);
 
+import { ArweaveWalletKit } from "arweave-wallet-kit";
+import HomeView from "@/views/home";
+import useMounted from "@/hooks/useMounted";
+import ProposalsView from "@/views/proposals";
+import DeckDetailsView from "@/views/deck-details";
+import ExploreView from "@/views/explore";
+
+function App() {
+  const mounted = useMounted();
+
+  if (!mounted) {
+    return <></>;
+  }
   return (
-    <HashRouter>
-      <Routes>
-        {/* <Route path={"/"} element={<HomePage />} />
-        <Route path={"/about/"} element={<About />} /> */}
-      </Routes>
-    </HashRouter>
+    <ArweaveWalletKit>
+      <HashRouter>
+        <Routes>
+          <Route path={"/"} element={<HomeView />} />
+          <Route path={"deck/:id"} element={<DeckDetailsView />} />
+          <Route path={"explore"} element={<ExploreView />} />
+          <Route path={"proposals"} element={<ProposalsView />} />
+        </Routes>
+      </HashRouter>
+    </ArweaveWalletKit>
   );
 }
 

@@ -1,5 +1,88 @@
 local json = require('json')
 
+
+
+-- User Decks
+-- Decks
+-- Decks Listed on the marketplace (They need to pass as proposals to be listed)
+-- Proposals
+
+-- User {
+--   id: number,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   cards: Deck[]
+-- }
+
+-- UserDeck {
+--   id: number,
+--   deck_id: number,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   cards: Deck[]
+-- }
+
+-- UserDeckCard {
+--   id: number,
+--   deck_id: number,
+--   question: string,
+--   answer: string,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   fails: number,
+--   passes: number,
+-- }
+
+
+-- Deck {
+--   id: number,
+--   name: string,
+--   description: string,
+--   author: string,
+--   listed: boolean,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   cards: Card[]
+-- }
+
+-- Card {
+--   id: number,
+--   deck_id: number,
+--   question: string,
+--   answer: string,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+-- }
+
+
+-- Proposal of a deck can only be created by the author
+-- If proposal reached endTime, and passed, author can now enlist deck to marketplace
+-- Proposal {
+--   id: number,
+--   deck_id: number,
+--   title: string,
+--   description: string,
+--   author: string,
+--   finished: boolean,
+--   createdAt: Date | number,
+--   endTime: Date | number,
+--   yes: number,
+--   no: number,
+-- }
+
+-- ProposalParticipant {
+--   id: number,
+--   proposal_id: number,
+--   participant: string,
+--   description: string,
+--   createdAt: Date | number,
+--   vote: "YES" | "NO"
+-- }
+
+
+
+
+
 -- Data
 DB = DB or {
   DECKS = 0,
