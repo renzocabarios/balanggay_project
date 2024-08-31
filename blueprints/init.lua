@@ -81,33 +81,98 @@ local json = require('json')
 
 
 
+-- Deck {
+--   id: number,
+--   name: string,
+--   description: string,
+--   author: string,
+--   listed: boolean,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   cards: Card[]
+-- }
+
+-- Card {
+--   id: number,
+--   deck_id: string,
+--   question: string,
+--   answer: string,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+-- }
+
+
+-- Proposal {
+--   id: number,
+--   deck_id: string,
+--   author: string,
+--   listed: boolean,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+-- }
+
+-- User {
+--   id: number,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+-- }
+
+-- UserDeck {
+--   id: number,
+--   deck_id: number,
+--   name: string,
+--   description: string,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+--   cards: UserCards[]
+-- }
+
+-- UserCard {
+--   id: number,
+--   user_deck_id: string,
+--   question: string,
+--   answer: string,
+--   pass: number,
+--   failed: number,
+--   dueAt: Date | number,
+--   createdAt: Date | number,
+--   updatedAt: Date | number,
+-- }
+
 
 
 -- Data
 DB = DB or {
   DECKS = 0,
+  USER_DECKS = 0,
+  USER_CARDS = 0,
+  USERS = 0,
   CARDS = 0
 }
 
 Decks = Decks or {}
 Cards = Cards or {}
 
+Users = Users or {}
+UserDecks = UserDecks or {}
+UserCards = UserCards or {}
+
 
 -- Handlers
 Handlers.add(
   "create_deck",
   Handlers.utils.hasMatchingTag("Action", "CreateDeck"),
-  function (msg)
-    print(msg.From)
-    print("create deck")
-
+  function(msg)
     local data = json.decode(msg.Data)
     DB["DECKS"] = DB["DECKS"] + 1
     table.insert(Decks, {
-        id = DB["DECKS"],
-        author = msg.From,
-        name = data.name,
-        description = data.description,
+      id = DB["DECKS"],
+      author = msg.From,
+      name = data.name,
+      description = data.description,
+      listed = false,
+      createdAt = msg.Timestamp,
+      updatedAt = msg.Timestamp,
     })
     Handlers.utils.reply("create deck success")(msg)
   end
@@ -116,17 +181,18 @@ Handlers.add(
 Handlers.add(
   "create_card",
   Handlers.utils.hasMatchingTag("Action", "CreateCard"),
-  function (msg)
+  function(msg)
     print(msg.From)
     print("create card")
+    -- Check if owner
 
     local data = json.decode(msg.Data)
     DB["CARDS"] = DB["CARDS"] + 1
     table.insert(Cards, {
-        id = DB["CARDS"],
-        deck_id = data.deck_id,
-        question = data.question,
-        answer = data.answer,
+      id = DB["CARDS"],
+      deck_id = data.deck_id,
+      question = data.question,
+      answer = data.answer,
     })
     Handlers.utils.reply("create card success")(msg)
   end
@@ -135,32 +201,42 @@ Handlers.add(
 Handlers.add(
   "get_my_decks",
   Handlers.utils.hasMatchingTag("Action", "GetMyDecks"),
-  function (msg)
+  function(msg)
     print(msg.From)
     print("get my decks")
     local temp = {}
     for _, value in ipairs(Decks) do
-        if(value.author == msg.From) then
-            table.insert(temp, value)
-        end
+      if (value.author == msg.From) then
+        table.insert(temp, value)
+      end
     end
     Handlers.utils.reply(json.encode(temp))(msg)
   end
 )
 
 
-Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Data = '{"name":"qwdqd","description":"test"}', Action = "CreateDeck"})
-Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Data = '{"deck_id": 15,"question":"qwdqd","answer":"test"}', Action = "CreateCard"})
-Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Action = "GetMyDecks"})
+Send({
+  Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
+  Data = '{"name":"qwdqd","description":"test"}',
+  Action =
+  "CreateDeck"
+})
+Send({
+  Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
+  Data =
+  '{"deck_id": 15,"question":"qwdqd","answer":"test"}',
+  Action = "CreateCard"
+})
+Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Action = "GetMyDecks" })
 
 -- Users = Users or {}
 -- Cards = Cards or {}
 -- User {
---     username: string;     
---     totalDecks: number;     
+--     username: string;
+--     totalDecks: number;
 --     Deck: {
 --         authority: address;
---         totalCards: number;     
+--         totalCards: number;
 --         Card: {
 --             question: string;
 --             answer: string;

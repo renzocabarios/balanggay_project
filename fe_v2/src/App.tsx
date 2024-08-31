@@ -7,6 +7,7 @@ import useMounted from "@/hooks/useMounted";
 import ProposalsView from "@/views/proposals";
 import DeckDetailsView from "@/views/deck-details";
 import ExploreView from "@/views/explore";
+import ProposalDetailsView from "./views/proposal-details";
 
 function App() {
   const mounted = useMounted();
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path={"/"} element={<HomeView />} />
           <Route path={"deck/:id"} element={<DeckDetailsView />} />
+          <Route path={"proposal/:id"} element={<ProposalDetailsView />} />
           <Route path={"explore"} element={<ExploreView />} />
           <Route path={"proposals"} element={<ProposalsView />} />
         </Routes>

@@ -31,7 +31,7 @@ import MainLayout from "@/layouts/main.layout";
 
 export default function ProposalsView() {
   const [createDeckModalOpen, setCreateDeckModalOpen] = useState(false);
-
+  // useGetProposals
   return (
     <>
       <CreateDeckModal
@@ -41,7 +41,18 @@ export default function ProposalsView() {
       <MainLayout>
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-semibold">Proposals</p>
-          <p className="">Vote Wisely</p>
+          {/* <p className="">Vote Wisely</p> */}
+        </div>
+
+        <div className="flex flex-wrap w-full gap-4">
+          <Deck
+            name="Medical Deck"
+            description="This is just a test"
+            author={truncateAddress(
+              "_89TeNGkjWHsPVNNFETVtJYoUUCianNWC0dRnuhXHyc"
+            )}
+            deck_id={1}
+          />
         </div>
       </MainLayout>
     </>
@@ -52,9 +63,10 @@ interface IDeckProps {
   name: string;
   description: string;
   author: string;
+  deck_id: number;
 }
 
-function Deck({ name, description, author }: IDeckProps) {
+function Deck({ name, description, author, deck_id }: IDeckProps) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-4 p-4 basis-[32%] rounded-xl border border-border">
@@ -68,10 +80,10 @@ function Deck({ name, description, author }: IDeckProps) {
       <Button
         className="flex items-center justify-center gap-2"
         onClick={() => {
-          navigate("session-timed-out");
+          navigate(`/proposal/${deck_id}`);
         }}
       >
-        <p className="text-lg font-medium">Add to my deck</p> <Plus size={16} />
+        <p className="text-lg font-medium">View</p>
       </Button>
     </div>
   );

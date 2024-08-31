@@ -31,7 +31,7 @@ import MainLayout from "@/layouts/main.layout";
 
 export default function HomeView() {
   const [createDeckModalOpen, setCreateDeckModalOpen] = useState(false);
-
+  // useGetMyDecks
   return (
     <>
       <CreateDeckModal
@@ -107,9 +107,10 @@ function CreateDeckModal({ open, onOpenChange }: ICreateDeckModalProps) {
     resolver: zodResolver(CreateDeckSchema),
     defaultValues: CreateDeckSchemaDefaults,
   });
+  // useCreateDeck
 
   function onSubmit(values: ICreateDeckSchema) {
-    console.log(values);
+    onOpenChange(false);
   }
 
   return (
@@ -126,7 +127,7 @@ function CreateDeckModal({ open, onOpenChange }: ICreateDeckModalProps) {
                   <FormItem className="w-full">
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="shadcn" {...field} />
+                      <Input placeholder="enter name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

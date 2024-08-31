@@ -111,6 +111,7 @@ interface IDeckProps {
 
 function Deck({ name, description, author }: IDeckProps) {
   const navigate = useNavigate();
+  // useAddtoMyDeck
   return (
     <div className="flex flex-col gap-4 p-4 basis-[32%] rounded-xl border border-border">
       <div className="flex flex-col gap-2">

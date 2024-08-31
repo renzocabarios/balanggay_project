@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import MainLayout from "@/layouts/main.layout";
 
-export default function DeckDetailsView() {
+export default function ProposalDetailsView() {
   const [createDeckModalOpen, setCreateDeckModalOpen] = useState(false);
 
   return (
@@ -39,21 +39,16 @@ export default function DeckDetailsView() {
         onOpenChange={setCreateDeckModalOpen}
       />
       <MainLayout>
-        <Button
-          className="h-12"
-          onClick={() => {
-            setCreateDeckModalOpen(true);
-          }}
-        >
-          <p className="text-2xl font-light">Start Recalling</p>{" "}
-        </Button>
-        <Button className="h-12">
-          <p className="text-2xl font-light">Enlist</p>{" "}
-        </Button>
+        <div className="flex items-center justify-between">
+          <Button className="h-12 flex-1">
+            <p className="text-2xl font-light">Yes</p>{" "}
+          </Button>
 
-        <Button className="h-12">
-          <p className="text-2xl font-light">Sync Cards</p>{" "}
-        </Button>
+          <Button className="h-12 flex-1">
+            <p className="text-2xl font-light">No</p>{" "}
+          </Button>
+        </div>
+
         <div className="flex flex-col gap-4">
           <p className="text-2xl font-semibold">Medical Field</p>
 
