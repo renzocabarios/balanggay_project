@@ -81,16 +81,7 @@ local json = require('json')
 
 
 
--- Deck {
---   id: number,
---   name: string,
---   description: string,
---   author: string,
---   listed: boolean,
---   createdAt: Date | number,
---   updatedAt: Date | number,
---   cards: Card[]
--- }
+
 
 -- Card {
 --   id: number,
@@ -118,30 +109,6 @@ local json = require('json')
 --   updatedAt: Date | number,
 -- }
 
--- UserDeck {
---   id: number,
---   deck_id: number,
---   name: string,
---   description: string,
---   createdAt: Date | number,
---   updatedAt: Date | number,
---   cards: UserCards[]
--- }
-
--- UserCard {
---   id: number,
---   user_deck_id: string,
---   question: string,
---   answer: string,
---   pass: number,
---   failed: number,
---   dueAt: Date | number,
---   createdAt: Date | number,
---   updatedAt: Date | number,
--- }
-
-
-
 -- Data
 DB = DB or {
   DECKS = 0,
@@ -157,8 +124,40 @@ Users = Users or {}
 UserDecks = UserDecks or {}
 UserCards = UserCards or {}
 
+-- Helpers
+-- local function isExist(author, deck_id, name, description, createdAt, updatedAt)
+--   local deckExists = false
+
+--   DB["USER_DECKS"] = DB["USER_DECKS"] + 1
+--   table.insert(UserDecks, {
+--     id = DB["USER_DECKS"],
+--     deck_id = deck_id,
+--     author = author,
+--     name = name,
+--     description = description,
+--     listed = false,
+--     createdAt = createdAt,
+--     updatedAt = updatedAt,
+--   })
+-- end
 
 
+-- Services
+
+-- TODO createUserCard
+-- local function createUserCard(author, deck_id, name, description, createdAt, updatedAt)
+--   DB["USER_CARDS"] = DB["USER_CARDS"] + 1
+--   table.insert(UserCards, {
+--     id = DB["USER_CARDS"],
+--     deck_id = deck_id,
+--     author = author,
+--     name = name,
+--     description = description,
+--     listed = false,
+--     createdAt = createdAt,
+--     updatedAt = updatedAt,
+--   })
+-- end
 
 local function createUserDeck(author, deck_id, name, description, createdAt, updatedAt)
   DB["USER_DECKS"] = DB["USER_DECKS"] + 1
@@ -187,6 +186,18 @@ local function createDeck(author, name, description, createdAt, updatedAt)
   })
 end
 
+local function createCard(deck_id, question, answer, createdAt, updatedAt)
+  DB["CARDS"] = DB["CARDS"] + 1
+  table.insert(Cards, {
+    id = DB["CARDS"],
+    deck_id = deck_id,
+    question = question,
+    answer = answer,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+  })
+end
+
 local function createUser(address, createdAt, updatedAt)
   DB["USERS"] = DB["USERS"] + 1
   table.insert(Users, {
@@ -198,6 +209,55 @@ local function createUser(address, createdAt, updatedAt)
 end
 
 -- Handlers
+
+
+Handlers.add(
+  "create_card",
+  Handlers.utils.hasMatchingTag("Action", "CreateCard"),
+  function(msg)
+    local data = json.decode(msg.Data)
+
+    local deck_id = data.deck_id
+
+    local deckExists = false
+    for _, deck in ipairs(Decks) do
+      if deck.id == deck_id then
+        deckExists = true
+        break
+      end
+    end
+
+    if deckExists == false then
+      Handlers.utils.reply("create card failed, deck does not exist")(msg)
+      return
+    end
+
+
+    local isAuthor = false
+    for _, deck in ipairs(Decks) do
+      if (deck.id == deck_id) and (deck.author == msg.From) then
+        isAuthor = true
+        break
+      end
+    end
+
+    if isAuthor == false then
+      Handlers.utils.reply("create card failed, not the author")(msg)
+      return
+    end
+
+    createCard(
+      deck_id,
+      data.question,
+      data.answer,
+      msg.Timestamp,
+      msg.Timestamp
+    )
+
+    Handlers.utils.reply("create card success")(msg)
+  end
+)
+
 
 Handlers.add(
   "create_deck",
@@ -269,60 +329,36 @@ Handlers.add(
   end
 )
 
--- Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Data = '{"name":"qwdqd","description":"test"}', Action = "CreateUser"}).receive().Data
-
-
-
-Handlers.add(
-  "create_card",
-  Handlers.utils.hasMatchingTag("Action", "CreateCard"),
-  function(msg)
-    print(msg.From)
-    print("create card")
-    -- Check if owner
-
-    local data = json.decode(msg.Data)
-    DB["CARDS"] = DB["CARDS"] + 1
-    table.insert(Cards, {
-      id = DB["CARDS"],
-      deck_id = data.deck_id,
-      question = data.question,
-      answer = data.answer,
-    })
-    Handlers.utils.reply("create card success")(msg)
-  end
-)
-
 Handlers.add(
   "get_my_decks",
   Handlers.utils.hasMatchingTag("Action", "GetMyDecks"),
   function(msg)
-    print(msg.From)
-    print("get my decks")
-    local temp = {}
-    for _, value in ipairs(Decks) do
-      if (value.author == msg.From) then
-        table.insert(temp, value)
+    local decks = {}
+
+    for _, deck in ipairs(Decks) do
+      if (deck.author == msg.From) then
+        table.insert(decks, deck)
       end
     end
-    Handlers.utils.reply(json.encode(temp))(msg)
+
+    Handlers.utils.reply(json.encode(decks))(msg)
   end
 )
 
 
-Send({
-  Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
-  Data = '{"name":"qwdqd","description":"test"}',
-  Action =
-  "CreateDeck"
-})
-Send({
-  Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
-  Data =
-  '{"deck_id": 15,"question":"qwdqd","answer":"test"}',
-  Action = "CreateCard"
-})
-Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Action = "GetMyDecks" })
+-- Send({
+--   Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
+--   Data = '{"name":"qwdqd","description":"test"}',
+--   Action =
+--   "CreateDeck"
+-- })
+-- Send({
+--   Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g",
+--   Data =
+--   '{"deck_id": 15,"question":"qwdqd","answer":"test"}',
+--   Action = "CreateCard"
+-- })
+-- Send({ Target = "R9aWm3slNiWeH4ToQV8iCFteeuDx-IvKx2HWQLMOG0g", Action = "GetMyDecks" })
 
 -- Users = Users or {}
 -- Cards = Cards or {}
